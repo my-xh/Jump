@@ -14,11 +14,14 @@ import warnings
 
 from PIL import Image
 from matplotlib.widgets import Button
+from screen_cap import get_screen_image
 
 warnings.filterwarnings('ignore')
 
 if __name__ == '__main__':
     figure = plt.figure()  # 新建空白图形对象
+    # 将获取的图片显示在主窗体中
+    axes_image = plt.imshow(get_screen_image(), animated=True)
 
     # 添加重选按钮
     reselect_position = plt.axes([0.79, 0.8, 0.1, 0.08])

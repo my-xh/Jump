@@ -113,3 +113,4 @@ venv.bak/
 *.iml
 out
 gen
+/image/screen.png
