@@ -65,6 +65,14 @@ def on_click(event):
             Thread(target=update).start()  # 通过线程执行主界面更新
 
 
+def reselect(event):
+    """重选按钮功能"""
+    if len(coor) < 2:
+        coor.clear()
+        axes.lines.clear()
+        figure.canvas.draw()
+
+
 if __name__ == '__main__':
     coor = []  # 保存选取位置的坐标
     is_auto = False  # 自动模式标记
@@ -86,5 +94,7 @@ if __name__ == '__main__':
 
     # 设置主窗体单击事件
     figure.canvas.mpl_connect('button_press_event', on_click)
+    # 设置重选按钮点击事件
+    reselect_button.on_clicked(reselect)
 
     plt.show()
