@@ -19,6 +19,7 @@ from PIL import Image
 from matplotlib.widgets import Button
 from screen_cap import get_screen_image
 from threading import Thread
+from auto import AutoManager
 
 warnings.filterwarnings('ignore')
 
@@ -45,24 +46,25 @@ def update():
 
 
 def on_click(event):
-    if is_auto:
-        print('已开启自动模式！')
-    else:
-        x, y = event.xdata, event.ydata
-        # 当鼠标点击图片外面或者重选、自动按钮时不做任何处理
-        if x is None or y is None or not isinstance(event.inaxes, plt.Subplot):
-            return
+    if auto:
+        print('\033[1;31m自动模式开启中...\033[0m')
+        return
 
-        x, y = float(x), float(y)
-        coor.append((x, y))
+    x, y = event.xdata, event.ydata
+    # 当鼠标点击图片外面或者重选、自动按钮时不做任何处理
+    if x is None or y is None or not isinstance(event.inaxes, plt.Subplot):
+        return
 
-        axes.plot(x, y, 'r*')  # 绘制红色的*号
-        figure.canvas.draw()  # 重画
+    x, y = float(x), float(y)
+    coor.append((x, y))
 
-        if len(coor) == 2:
-            jump_to_next(coor.pop(), coor.pop())  # 执行跳跃方法，并清空选取坐标
-            axes.lines.clear()  # 清除绘制的红色*号
-            Thread(target=update).start()  # 通过线程执行主界面更新
+    axes.plot(x, y, 'r*')  # 绘制红色的*号
+    figure.canvas.draw()  # 重画
+
+    if len(coor) == 2:
+        jump_to_next(coor.pop(), coor.pop())  # 执行跳跃方法，并清空选取坐标
+        axes.lines.clear()  # 清除绘制的红色*号
+        Thread(target=update).start()  # 通过线程执行主界面更新
 
 
 def reselect(event):
@@ -75,7 +77,7 @@ def reselect(event):
 
 if __name__ == '__main__':
     coor = []  # 保存选取位置的坐标
-    is_auto = False  # 自动模式标记
+    auto = AutoManager(update)  # 自动模式
     figure = plt.figure()  # 新建空白图形对象
     axes = figure.add_subplot(1, 1, 1)  # 创建用于绘制选取位置的子视图
 
@@ -96,5 +98,7 @@ if __name__ == '__main__':
     figure.canvas.mpl_connect('button_press_event', on_click)
     # 设置重选按钮点击事件
     reselect_button.on_clicked(reselect)
+    # 设置自动按钮点击事件
+    auto_button.on_clicked(auto)
 
     plt.show()

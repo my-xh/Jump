@@ -10,6 +10,7 @@
 """
 
 import os
+import subprocess
 
 from PIL import Image
 
@@ -24,6 +25,19 @@ def get_screen_image():
     os.system(f'adb pull {SRC_DIR} {DST_DIR}')
 
     return Image.open(DST_DIR)
+
+
+def get_screenshot(img_name):
+    """获取手机截图，无返回值"""
+    process = subprocess.Popen('adb shell screencap -p', shell=True, stdout=subprocess.PIPE)
+    if process is not None:
+        # 读取截图信息
+        screenshot = process.stdout.read()
+        # 计算机识别格式
+        binary_screenshot = screenshot.replace(b'\r\n', b'\n')
+        # 将图片写入项目文件夹
+        with open(img_name, 'wb') as f:
+            f.write(binary_screenshot)
 
 
 if __name__ == '__main__':
